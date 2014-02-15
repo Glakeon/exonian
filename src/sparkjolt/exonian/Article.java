@@ -56,7 +56,7 @@ public class Article extends FragmentActivity {
             String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
             String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
             String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
-            String imageURL = "http://theexonian.com/new/wp-content/uploads/2014/02/DSC076601-700x466.jpg";
+            String imageURL = "http://theexonian.com/new/wp-content/uploads/2014/02/DSC08103-700x466.jpg";
             
             // Do not get the CSS after the </p> tag for the content text
             contentText = contentText.substring(0, contentText.indexOf("<style type='text/css'>"));
@@ -79,6 +79,7 @@ public class Article extends FragmentActivity {
 	    }
 	}
     
+    // Retrieves the image at the URL in a Bitmap
     private Bitmap downloadImage(String URL) {
     	Bitmap bitmap = null;
     	try {
@@ -91,6 +92,7 @@ public class Article extends FragmentActivity {
     	return bitmap;
     }
     
+    // Establish a stream connection to a URL
     private InputStream getHttpConnection(String URL) throws IOException {
     	InputStream stream = null;
     	HttpURLConnection connection = (HttpURLConnection) ((new URL(URL)).openConnection());
