@@ -1,4 +1,4 @@
 exonian
 =======
 
-Android App for the Exonian Newspaper
+The project is an Android application for the Exonian newspaper.
