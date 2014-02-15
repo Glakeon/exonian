@@ -24,6 +24,12 @@
 	        android:textSize="17sp"
 	        android:paddingTop="8sp" />
 		
+		<ImageView
+			android:id="@+id/article_image"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:contentDescription="Main Picture of Article" />
+		
 	    <TextView
 	        android:id="@+id/article_content"
 	        android:layout_width="fill_parent"

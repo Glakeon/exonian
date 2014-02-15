@@ -1,8 +1,11 @@
 package sparkjolt.exonian;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,12 +15,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.view.Menu;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class Article extends FragmentActivity {
@@ -50,6 +56,7 @@ public class Article extends FragmentActivity {
             String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
             String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
             String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
+            String imageURL = "http://theexonian.com/new/wp-content/uploads/2014/02/DSC076601-700x466.jpg";
             
             // Do not get the CSS after the </p> tag for the content text
             contentText = contentText.substring(0, contentText.indexOf("<style type='text/css'>"));
@@ -63,10 +70,37 @@ public class Article extends FragmentActivity {
             content.setTypeface(tf);
             title.setTypeface(tf, Typeface.BOLD);
             author.setTypeface(tf, Typeface.ITALIC);
+            
+            // Load the picture from the image URL
+            ImageView imageView = (ImageView) findViewById(R.id.article_image);
+            imageView.setImageBitmap(downloadImage(imageURL));
         } catch (Exception e) {
             e.printStackTrace();
 	    }
 	}
+    
+    private Bitmap downloadImage(String URL) {
+    	Bitmap bitmap = null;
+    	try {
+    		InputStream stream = getHttpConnection(URL);
+    		bitmap = BitmapFactory.decodeStream(stream, null, new BitmapFactory.Options());
+    		stream.close();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    	return bitmap;
+    }
+    
+    private InputStream getHttpConnection(String URL) throws IOException {
+    	InputStream stream = null;
+    	HttpURLConnection connection = (HttpURLConnection) ((new URL(URL)).openConnection());
+    	connection.setRequestMethod("GET");
+    	connection.connect();
+    	if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+    		stream = connection.getInputStream();
+    	}
+    	return stream;
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
