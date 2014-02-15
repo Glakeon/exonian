@@ -1,11 +1,8 @@
 package sparkjolt.exonian;
 
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.v4.app.FragmentActivity;
-import android.text.Html;
-import android.view.Menu;
-import android.widget.TextView;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -15,12 +12,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.os.StrictMode;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.view.Menu;
+import android.widget.TextView;
 
 public class Article extends FragmentActivity {
-
+	
+	TextView title;
+	TextView author;
+	TextView date;
     TextView content;
 
     @Override
@@ -31,17 +35,27 @@ public class Article extends FragmentActivity {
 		// Allow network access in the main thread
 	    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        content = (TextView) findViewById(R.id.content);
-
+        
+        // Access the TextViews
+        content = (TextView) findViewById(R.id.article_content);
+        title = (TextView) findViewById(R.id.article_title);
+        author = (TextView) findViewById(R.id.article_author);
+        
+        // Read the JSON into a string
         String feed = readExonianFeed();
+        
         try {
-            // Construct a JSON object from the feed, and get the content of the post from it.
+            // Construct a JSON object and get the content of the post
             JSONObject jsonObject = new JSONObject(feed);
             String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
-            // Only get the text, not the css, which begins after the end of the p tag.
+            
+            // Do not get the CSS after the <p> tag
             contentText = contentText.substring(0, contentText.indexOf("</p>"));
             content.setText(Html.fromHtml(contentText));
+            
+            // Set the font to Ebrima
+            Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/ebrima.ttf");
+            content.setTypeface(tf);
         } catch (Exception e) {
             e.printStackTrace();
 	    }
