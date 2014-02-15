@@ -48,14 +48,20 @@ public class Article extends FragmentActivity {
             // Construct a JSON object and get the content of the post
             JSONObject jsonObject = new JSONObject(feed);
             String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
+            String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
+            String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
             
-            // Do not get the CSS after the <p> tag
+            // Do not get the CSS after the </p> tag for the content text
             contentText = contentText.substring(0, contentText.indexOf("</p>"));
             content.setText(Html.fromHtml(contentText));
+            title.setText(titleText);
+            author.setText(authorText);
             
             // Set the font to Ebrima
             Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/ebrima.ttf");
             content.setTypeface(tf);
+            title.setTypeface(tf, Typeface.BOLD);
+            author.setTypeface(tf, Typeface.ITALIC);
         } catch (Exception e) {
             e.printStackTrace();
 	    }
@@ -72,7 +78,7 @@ public class Article extends FragmentActivity {
 	public String readExonianFeed() {
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet("http://theexonian.com/new/2014/02/13/rdfz-students-come-to-campus/?json=1");
+		HttpGet httpGet = new HttpGet("http://theexonian.com/new/2014/02/13/boys-track-wins-ea-girls-fall-close-behind/?json=1");
 		
 		// Uses a BufferedReader to read all of the content from the URL
 		try {
