@@ -73,6 +73,8 @@ public class Article extends FragmentActivity {
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet("http://theexonian.com/new/2014/02/13/rdfz-students-come-to-campus/?json=1");
+		
+		// Uses a BufferedReader to read all of the content from the URL
 		try {
 			HttpResponse response = client.execute(httpGet);
 			StatusLine statusLine = response.getStatusLine();
