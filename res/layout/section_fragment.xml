@@ -8,7 +8,7 @@
         android:id="@+id/article_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="RDFZ Students Come to Campus"
+        android:text="Sample Article"
         android:onClick="showArticle" />
     
 </LinearLayout>

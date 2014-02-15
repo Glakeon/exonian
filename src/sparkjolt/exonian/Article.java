@@ -52,7 +52,8 @@ public class Article extends FragmentActivity {
             String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
             
             // Do not get the CSS after the </p> tag for the content text
-            contentText = contentText.substring(0, contentText.indexOf("</p>"));
+            contentText = contentText.substring(0, contentText.indexOf("<style type='text/css'>"));
+            contentText = contentText.substring(0, contentText.lastIndexOf("</p>"));
             content.setText(Html.fromHtml(contentText));
             title.setText(titleText);
             author.setText(authorText);
