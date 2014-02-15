@@ -1,19 +1,16 @@
 package sparkjolt.exonian;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
+import java.io.*;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
-import android.os.Bundle;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import android.os.*;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
+import android.widget.Toast;
 
 public class Article extends FragmentActivity {
 
@@ -21,6 +18,21 @@ public class Article extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.article);
+	    
+		// Allow network access in the main thread
+	    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+	    StrictMode.setThreadPolicy(policy); 
+	    
+	    String feed = readExonianFeed();
+	    try {
+	    	JSONArray jsonArray = new JSONArray(feed);
+	    	for (int i = 0; i < jsonArray.length(); i++) {
+	    		JSONObject object = jsonArray.getJSONObject(i);
+	    		Toast.makeText(this, object.getString("text"), Toast.LENGTH_SHORT).show();
+	    	}
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }
 	}
 
 	@Override
