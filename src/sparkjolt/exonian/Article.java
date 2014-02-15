@@ -1,37 +1,49 @@
 package sparkjolt.exonian;
 
-import java.io.*;
-import org.apache.http.*;
+import android.os.Bundle;
+import android.os.StrictMode;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.view.Menu;
+import android.widget.TextView;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import android.os.*;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class Article extends FragmentActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    TextView content;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.article);
 	    
 		// Allow network access in the main thread
 	    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-	    StrictMode.setThreadPolicy(policy); 
-	    
-	    String feed = readExonianFeed();
-	    try {
-	    	JSONArray jsonArray = new JSONArray(feed);
-	    	for (int i = 0; i < jsonArray.length(); i++) {
-	    		JSONObject object = jsonArray.getJSONObject(i);
-	    		Toast.makeText(this, object.getString("text"), Toast.LENGTH_SHORT).show();
-	    	}
-	    } catch (Exception e) {
-	    	e.printStackTrace();
+        StrictMode.setThreadPolicy(policy);
+
+        content = (TextView) findViewById(R.id.content);
+
+        String feed = readExonianFeed();
+        try {
+            // Construct a JSON object from the feed, and get the content of the post from it.
+            JSONObject jsonObject = new JSONObject(feed);
+            String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
+            // Only get the text, not the css, which begins after the end of the p tag.
+            contentText = contentText.substring(0, contentText.indexOf("</p>"));
+            content.setText(Html.fromHtml(contentText));
+        } catch (Exception e) {
+            e.printStackTrace();
 	    }
 	}
 
