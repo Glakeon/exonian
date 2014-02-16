@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
     <Button
         android:id="@+id/article_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Sample Article"
-        android:onClick="showArticle" />
-    
+        android:onClick="showArticle"
+        android:text="Sample Article" />
+
 </LinearLayout>
