@@ -1,4 +1,4 @@
-package theexonian.theexonian;
+package app.exonian;
 
 import java.util.Locale;
 
