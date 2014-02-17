@@ -26,11 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="app.exonian.Article"
+            android:name="app.exonian.ArticleActivity"
             android:label="@string/app_name"
             android:parentActivityName="app.exonian.Home" >
             <intent-filter>
-                <action android:name="android.intent.action.Article" />
+                <action android:name="android.intent.action.ArticleActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

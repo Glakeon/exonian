@@ -48,7 +48,7 @@ public class Home extends FragmentActivity {
 	}
 	
 	public void showArticle(View view) {
-		Intent i = new Intent("android.intent.action.Article");
+		Intent i = new Intent("android.intent.action.ArticleActivity");
 		startActivity(i);
 	}
 	
