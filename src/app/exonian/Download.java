@@ -95,6 +95,23 @@ public class Download {
 				String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
 				final String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
 				final String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
+				
+				// Set the font to Ebrima
+				final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
+				
+				activity.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
+						((TextView) activity.findViewById(R.id.article_author)).setText(authorText);
+
+						((TextView) activity.findViewById(R.id.article_content)).setTypeface(tf);
+						((TextView) activity.findViewById(R.id.article_title)).setTypeface(tf, Typeface.BOLD);
+						((TextView) activity.findViewById(R.id.article_author)).setTypeface(tf, Typeface.ITALIC);
+					}
+
+				});
 
 				// Do not get the CSS after the </p> tag for the content text
 				contentText = contentText.substring(0, contentText.indexOf("<style type='text/css'>"));
@@ -102,21 +119,12 @@ public class Download {
 
 				final String finalContent = contentText;
 
-				// Set the font to Ebrima
-				final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
-
 				// Run the UI changes in the UI thread per thread policy.
 				activity.runOnUiThread(new Runnable() {
 
 					@Override
 					public void run() {
 						((TextView) activity.findViewById(R.id.article_content)).setText(Html.fromHtml(finalContent));
-						((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
-						((TextView) activity.findViewById(R.id.article_author)).setText(authorText);
-
-						((TextView) activity.findViewById(R.id.article_content)).setTypeface(tf);
-						((TextView) activity.findViewById(R.id.article_title)).setTypeface(tf, Typeface.BOLD);
-						((TextView) activity.findViewById(R.id.article_author)).setTypeface(tf, Typeface.ITALIC);
 					}
 
 				});

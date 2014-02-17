@@ -5,7 +5,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class Article extends FragmentActivity {
@@ -32,6 +34,8 @@ public class Article extends FragmentActivity {
 		} else {
 			Toast.makeText(this, "No network connection available.", Toast.LENGTH_LONG).show();
 		}
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -39,5 +43,17 @@ public class Article extends FragmentActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.home, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		// Respond to the action bar's Up/Home button
+		case android.R.id.home:
+			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		}
+		return false;
+		
 	}
 }
