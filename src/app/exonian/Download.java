@@ -128,6 +128,9 @@ public class Download {
 					}
 
 				});
+				DBAdapter adapter = new DBAdapter(activity);
+				adapter.open();
+				adapter.insertArticle(titleText, authorText, finalContent);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
