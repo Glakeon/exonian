@@ -126,7 +126,7 @@ public class HomeActivity extends FragmentActivity {
 			
 	        View view = inflater.inflate(R.layout.news_fragment, container, false);
 	        ListView listView = (ListView) view.findViewById(R.id.list_news);
-	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, articleTitles);
+	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.article_list, R.id.list_article_title, articleTitles);
 	        listView.setAdapter(adapter);
 	        
 	        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
