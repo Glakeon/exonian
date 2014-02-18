@@ -27,8 +27,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class HomeActivity extends FragmentActivity {
 
@@ -99,7 +101,7 @@ public class HomeActivity extends FragmentActivity {
 	
 	public static class NewsFragment extends Fragment {
 		public static final String SECTION_NUMBER = "section_number";
-		
+
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			super.onCreateView(inflater, container, savedInstanceState);
@@ -126,7 +128,16 @@ public class HomeActivity extends FragmentActivity {
 	        ListView listView = (ListView) view.findViewById(R.id.list_news);
 	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, articleTitles);
 	        listView.setAdapter(adapter);
+	        
+	        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					String item = (String) parent.getItemAtPosition(position);
+					Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+				}
+	        	
+			});
 	        return view;
 		}
 	
