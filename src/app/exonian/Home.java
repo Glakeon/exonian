@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +21,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -30,9 +32,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -110,131 +110,82 @@ public class Home extends FragmentActivity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			super.onCreateView(inflater, container, savedInstanceState);
 			
+			// Allow network access in the main thread
+			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+			StrictMode.setThreadPolicy(policy);
+			
+			String newsFeed = getPage("http://theexonian.com/new/category/news/?json=1");
+			String[] articleTitles = {};
+			
+			try {
+				// Construct a JSON object and get the content of the post
+				JSONArray posts = (JSONArray) (new JSONObject(newsFeed)).get("posts");
+				articleTitles = new String[posts.length()];
+				for (int i = 0; i < posts.length(); i++) {
+					articleTitles[i] = posts.getJSONObject(i).getString("title");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 	        View view = inflater.inflate(R.layout.news_fragment, container, false);
 	        ListView listView = (ListView) view.findViewById(R.id.list_news);
-	        String list[] = {"dumb1", "dumb2"};
-	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, articleTitles);
 	        listView.setAdapter(adapter);
 
 	        return view;
-			/*Button button = new Button(getActivity());
-		    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		    button.setLayoutParams(params);
-
-			ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.news_fragment, container, false);
-			rootView.addView(button);
-			return rootView;*/
 		}
-		
-		public class DownloadNews extends AsyncTask<String, Void, String> {
-			
-			private Activity activity;
-			
-			public DownloadNews(Activity activity) {
-				this.activity = activity;
-			}
-			
-			// Reads an InputStream and converts it to a string
-			public String readIt(InputStream stream) {
-				try {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "utf-8"), 8);
-					StringBuilder sb = new StringBuilder();
-					String line = null;
-					while ((line = reader.readLine()) != null) {
-						sb.append(line + "\n");
-					}
-					stream.close();
-					return sb.toString();
-				} catch (IOException e) {
-					return "Error loading the article.";
+	
+		// Reads an InputStream and converts it to a string
+		public String readIt(InputStream stream) {
+			try {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "utf-8"), 8);
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
 				}
-			}
-
-			@Override
-			protected String doInBackground(String... urls) {
-				InputStream is = null;
-				try {
-					// The URL is the first in the array
-					URI url = URI.create(urls[0]);
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpGet httpget = new HttpGet(url);
-					HttpResponse response = httpclient.execute(httpget);
-					HttpEntity entity = response.getEntity();
-					
-					// Starts the query
-					is = entity.getContent();
-					if (response.getStatusLine().getStatusCode() == 200) {
-						
-						// Convert the InputStream into a string
-						String contentAsString = readIt(is);
-						return contentAsString;
-					} else {
-						return "Error loading the article.";
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					// Close the InputStream
-					if (is != null) {
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+				stream.close();
+				return sb.toString();
+			} catch (IOException e) {
 				return "Error loading the article.";
 			}
-
-			@Override
-			protected void onPostExecute(String result) {
-				try {
-					// Construct a JSON object and get the content of the post
-					JSONObject jsonObject = new JSONObject(result);
-					String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
-					final String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
-					final String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
-					final String dateText = (String) ((JSONObject) jsonObject.get("post")).get("date");
+		}
+		
+		private String getPage(String URL) {
+			InputStream is = null;
+			try {
+				// The URL is the first in the array
+				URI url = URI.create(URL);
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httpget = new HttpGet(url);
+				HttpResponse response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+				
+				// Starts the query
+				is = entity.getContent();
+				if (response.getStatusLine().getStatusCode() == 200) {
 					
-					// Set the font to Ebrima
-					final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
-					
-					activity.runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
-							((TextView) activity.findViewById(R.id.article_author)).setText(authorText);
-							((TextView) activity.findViewById(R.id.article_date)).setText(dateText);
-
-							((TextView) activity.findViewById(R.id.article_content)).setTypeface(tf);
-							((TextView) activity.findViewById(R.id.article_title)).setTypeface(tf, Typeface.BOLD);
-							((TextView) activity.findViewById(R.id.article_author)).setTypeface(tf, Typeface.ITALIC);
-						}
-
-					});
-
-					// Do not get the CSS after the </p> tag for the content text
-					contentText = contentText.substring(0, contentText.indexOf("<style type='text/css'>"));
-					contentText = contentText.substring(0, contentText.lastIndexOf("</p>"));
-
-					final String finalContent = contentText;
-
-					// Run the UI changes in the UI thread per thread policy.
-					activity.runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							((TextView) activity.findViewById(R.id.article_content)).setText(Html.fromHtml(finalContent));
-						}
-
-					});
-					// articles.insertArticle(titleText, authorText, finalContent, dateText);
-				} catch (JSONException e) {
-					e.printStackTrace();
+					// Convert the InputStream into a string
+					String contentAsString = readIt(is);
+					return contentAsString;
+				} else {
+					return "Error loading the article.";
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				// Close the InputStream
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-
+			return "Error loading the article.";
 		}
+		
 	}
 }
