@@ -16,19 +16,7 @@ import android.view.ViewGroup;
 
 public class Home extends FragmentActivity {
 
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
-	 * will keep every loaded fragment in memory. If this becomes too memory
-	 * intensive, it may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
-
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
 	ViewPager mViewPager;
 
 	@Override
@@ -36,15 +24,12 @@ public class Home extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
 
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the app.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
-				getSupportFragmentManager());
+		// Create the adapter that will return a fragment for each of the three primary sections of the app
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter.
+		// Set up the ViewPager with the sections adapter
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
-
 	}
 	
 	public void showArticle(View view) {
@@ -54,15 +39,11 @@ public class Home extends FragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu and adds items to the action bar if it is present
 		getMenuInflater().inflate(R.menu.home, menu);
 		return true;
 	}
 
-	/**
-	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-	 * one of the sections/tabs/pages.
-	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {
@@ -71,9 +52,7 @@ public class Home extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			// getItem is called to instantiate the fragment for the given page.
-			// Return a DummySectionFragment (defined as a static inner class
-			// below) with the page number as its lone argument.
+			// Called to instantiate the fragment for the given page.
 			Fragment fragment = new SectionFragment();
 			Bundle args = new Bundle();
 			args.putInt(SectionFragment.SECTION_NUMBER, position + 1);
@@ -83,7 +62,7 @@ public class Home extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
+			// Show 3 total pages
 			return 3;
 		}
 
