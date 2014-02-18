@@ -13,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 public class Home extends FragmentActivity {
 
@@ -71,9 +74,9 @@ public class Home extends FragmentActivity {
 			Locale l = Locale.getDefault();
 			switch (position) {
 			case 0:
-				return getString(R.string.title_section1).toUpperCase(l);
+				return "News";
 			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
+				return "Humor";
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
 			}
@@ -86,7 +89,13 @@ public class Home extends FragmentActivity {
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.section_fragment, container, false);
+
+			Button button = new Button(getActivity());
+		    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		    button.setLayoutParams(params);
+
+			ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.news_fragment, container, false);
+			rootView.addView(button);
 			return rootView;
 		}
 	}

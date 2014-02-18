@@ -19,10 +19,10 @@ public class ArticleActivity extends FragmentActivity {
 		setContentView(R.layout.article);
 		
 		// Connect to a specific article and image
-		final String stringUrl = "http://theexonian.com/new/2014/02/13/boys-track-wins-ea-girls-fall-close-behind/?json=1&include=content,title,author,date";
+		final String stringUrl = "http://theexonian.com/new/2014/02/13/boys-track-wins-ea-girls-fall-close-behind/?json=1";
 		final String imageUrl = "http://theexonian.com/new/wp-content/uploads/2014/02/DSC08103-700x466.jpg";
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		
 		// Make sure the device is connected
 		if (networkInfo != null && networkInfo.isConnected()) {
