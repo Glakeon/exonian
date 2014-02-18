@@ -26,13 +26,16 @@ import android.widget.TextView;
 
 public class Download {
 	private String DEBUG_TAG = "error";
-	
+	private Adapter articles;
+
 	public class Page extends AsyncTask<String, Void, String> {
 		
 		private Activity activity;
 		
 		public Page(Activity activity) {
 			this.activity = activity;
+			articles = new Adapter(activity);
+			articles.open();
 		}
 		
 		// Reads an InputStream and converts it to a string
@@ -95,6 +98,7 @@ public class Download {
 				String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
 				final String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
 				final String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
+				final String dateText = (String) ((JSONObject) jsonObject.get("post")).get("date");
 				
 				// Set the font to Ebrima
 				final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
@@ -105,6 +109,7 @@ public class Download {
 					public void run() {
 						((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
 						((TextView) activity.findViewById(R.id.article_author)).setText(authorText);
+						((TextView) activity.findViewById(R.id.article_date)).setText(dateText);
 
 						((TextView) activity.findViewById(R.id.article_content)).setTypeface(tf);
 						((TextView) activity.findViewById(R.id.article_title)).setTypeface(tf, Typeface.BOLD);
@@ -128,9 +133,7 @@ public class Download {
 					}
 
 				});
-				DBAdapter adapter = new DBAdapter(activity);
-				adapter.open();
-				adapter.insertArticle(titleText, authorText, finalContent);
+				// articles.insertArticle(titleText, authorText, finalContent, dateText);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -159,7 +162,7 @@ public class Download {
 				// Starts the query
 				is = entity.getContent();
 				if (response.getStatusLine().getStatusCode() == 200) {
-					// Convert the InputStream into a bitmap
+					// Convert the InputStream into a Bitmap
 					return BitmapFactory.decodeStream(is);
 				} else {
 					Log.e(DEBUG_TAG, "Error loading the image.");
@@ -186,8 +189,7 @@ public class Download {
 			activity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					((ImageView) activity.findViewById(R.id.article_image))
-							.setImageBitmap(result);
+					((ImageView) activity.findViewById(R.id.article_image)).setImageBitmap(result);
 				}
 			});
 		}

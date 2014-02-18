@@ -21,7 +21,14 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingTop="5sp"
-            android:textSize="17sp" />
+            android:textSize="15sp" />
+        
+        <TextView 
+            android:id="@+id/article_date"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5sp"
+            android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/article_image"
