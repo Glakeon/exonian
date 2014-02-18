@@ -35,10 +35,15 @@ import android.widget.Toast;
 
 public class ArticleActivity extends FragmentActivity {
 
+	Adapter db;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		db = new Adapter(this);
+		db.open();
+		
 		setContentView(R.layout.article);
 		
 		// Connect to a specific article and image
@@ -181,7 +186,7 @@ public class ArticleActivity extends FragmentActivity {
 					}
 
 				});
-				// articles.insertArticle(titleText, authorText, finalContent, dateText);
+				Log.d("exeter", Long.toString(db.insertArticle(titleText, authorText, finalContent, dateText)));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
