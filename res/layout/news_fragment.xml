@@ -10,5 +10,11 @@
         android:layout_height="wrap_content"
         android:onClick="showArticle"
         android:text="Sample Article" />
+    
+    <ListView
+    	android:id="@+id/list_news"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content" >
+	</ListView>
 
 </LinearLayout>
