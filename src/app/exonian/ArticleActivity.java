@@ -186,11 +186,7 @@ public class ArticleActivity extends FragmentActivity {
 					}
 
 				});
-<<<<<<< HEAD
 				db.insertArticle(titleText, authorText, finalContent, dateText);
-=======
-				// Log.d("Database", Long.toString(db.insertArticle(titleText, authorText, finalContent, dateText)));
->>>>>>> branch 'master' of https://github.com/IggyIguana/exonian.git
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
