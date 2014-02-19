@@ -8,5 +8,6 @@
     <string name="title_section3">Section 3</string>
     <string name="mainpicture">Main Picture of Article</string>
     <string name="search_prompt">Search for:</string>
+    <string name="search_hint">Title/Author/Content</string>
 
 </resources>
