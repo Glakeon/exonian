@@ -3,6 +3,7 @@ package app.exonian;
 public class Article {
 	private long id;
 	private String title;
+	private String date;
 	private String author;
 	private String content;
 
@@ -36,6 +37,14 @@ public class Article {
 	
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	// Will be used by the ArrayAdapter in the ListView

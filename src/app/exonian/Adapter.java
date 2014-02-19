@@ -20,7 +20,7 @@ public class Adapter {
 	static final String DATABASE_TABLE = "articles";
 	static final int DATABASE_VERSION = 1;
 
-	static final String DATABASE_CREATE = "CREATE TABLE IF NOT EXISTS articles (_id INTEGER PRIMARY KEY AUTOINCREMENT, + title TEXT NOT NULL UNIQUE, author TEXT NOT NULL, content TEXT NOT NULL);";
+	static final String DATABASE_CREATE = "CREATE VIRTUAL TABLE IF NOT EXISTS articles USING fts4(_id INTEGER PRIMARY KEY AUTOINCREMENT, + title TEXT NOT NULL UNIQUE, author TEXT NOT NULL, content TEXT NOT NULL);";
 
 	final Context context;
 	DatabaseHelper helper;
@@ -96,14 +96,14 @@ public class Adapter {
 	}
 
 	// search for article
-	public Article searchArticle(String title) throws SQLException {
+	public Cursor searchArticlesByKey (String value, String key) throws SQLException {
 		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
 				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE },
-				KEY_TITLE + "LIKE %" + title + "%", null, null, null, null, null);
+				key + "LIKE %" + value + "%", null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
-		return cursorToArticle(mCursor);
+		return mCursor;
 	}
 
 }

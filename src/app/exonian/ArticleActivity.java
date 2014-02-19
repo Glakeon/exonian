@@ -83,7 +83,7 @@ public class ArticleActivity extends FragmentActivity {
 	}
 	
 	// Task to download the content from the Article
-	public class DownloadArticle extends AsyncTask<String, Void, String> {
+	class DownloadArticle extends AsyncTask<String, Void, String> {
 		
 		private Activity activity;
 		
@@ -186,11 +186,11 @@ public class ArticleActivity extends FragmentActivity {
 					}
 
 				});
-<<<<<<< HEAD
-				db.insertArticle(titleText, authorText, finalContent, dateText);
-=======
-				// db.insertArticle(titleText, authorText, finalContent, dateText);
->>>>>>> branch 'master' of https://github.com/IggyIguana/exonian.git
+				try {
+					db.insertArticle(titleText, authorText, finalContent, dateText);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -199,7 +199,7 @@ public class ArticleActivity extends FragmentActivity {
 	}
 	
 	// Task to download an image from a URL
-	public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+	class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 		
 		private Activity activity;
 		
