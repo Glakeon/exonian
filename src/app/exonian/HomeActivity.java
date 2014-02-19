@@ -133,8 +133,11 @@ public class HomeActivity extends FragmentActivity {
 				e.printStackTrace();
 			}
 			
+			// Must be final to access in onClickListener
 			final String[] finalArticleLinks = articleLinks;
 			final String[] finalImageLinks = imageLinks;
+			
+			// Set the custom ListView
 	        View view = inflater.inflate(R.layout.news_fragment, container, false);
 	        ListView listView = (ListView) view.findViewById(R.id.list_news);
 	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.article_list, R.id.list_article_title, articleTitles);
