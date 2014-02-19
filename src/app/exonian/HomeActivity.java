@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class HomeActivity extends FragmentActivity {
 
@@ -112,18 +112,22 @@ public class HomeActivity extends FragmentActivity {
 			
 			String newsFeed = getPage("http://theexonian.com/new/category/news/?json=1");
 			String[] articleTitles = {};
+			String[] articleLinks = {};
 			
 			try {
 				// Construct a JSON object and get the content of the post
 				JSONArray posts = (JSONArray) (new JSONObject(newsFeed)).get("posts");
 				articleTitles = new String[posts.length()];
+				articleLinks = new String[posts.length()];
 				for (int i = 0; i < posts.length(); i++) {
 					articleTitles[i] = posts.getJSONObject(i).getString("title");
+					articleLinks[i] = posts.getJSONObject(i).getString("url");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
+			final String[] finalLinks = articleLinks;
 	        View view = inflater.inflate(R.layout.news_fragment, container, false);
 	        ListView listView = (ListView) view.findViewById(R.id.list_news);
 	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.article_list, R.id.list_article_title, articleTitles);
@@ -133,8 +137,10 @@ public class HomeActivity extends FragmentActivity {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					String item = (String) parent.getItemAtPosition(position);
-					Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+					String link = finalLinks[position];
+					Intent i = new Intent("android.intent.action.ArticleActivity");
+					i.putExtra("url", link);
+					startActivity(i);
 				}
 	        	
 			});

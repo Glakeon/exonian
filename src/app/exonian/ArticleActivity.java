@@ -41,13 +41,13 @@ public class ArticleActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		final String stringUrl = getIntent().getStringExtra("url") + "?json=1";
 		db = new Adapter(this);
 		db.open();
 		
 		setContentView(R.layout.article);
 		
 		// Connect to a specific article and image
-		final String stringUrl = "http://theexonian.com/new/2014/02/13/boys-track-wins-ea-girls-fall-close-behind/?json=1";
 		final String imageUrl = "http://theexonian.com/new/wp-content/uploads/2014/02/DSC08103-700x466.jpg";
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
@@ -172,7 +172,7 @@ public class ArticleActivity extends FragmentActivity {
 				});
 
 				// Do not get the CSS after the </p> tag for the content text
-				contentText = contentText.substring(0, contentText.indexOf("<style type='text/css'>"));
+				contentText = contentText.substring(0, contentText.indexOf("style="));
 				contentText = contentText.substring(0, contentText.lastIndexOf("</p>"));
 
 				final String finalContent = contentText;
