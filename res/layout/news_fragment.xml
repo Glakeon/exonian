@@ -5,13 +5,6 @@
     android:orientation="vertical"
     android:padding="20dp" >
 
-    <Button
-        android:id="@+id/article_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showArticle"
-        android:text="Sample Article" />
-    
     <ListView
     	android:id="@+id/list_news"
     	android:layout_width="match_parent"
