@@ -1,6 +1,3 @@
-/**
- * 
- */
 package app.exonian;
 
 import java.io.BufferedReader;
