@@ -70,10 +70,15 @@ public class HomeActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			// Called to instantiate the fragment for the given page.
-			Fragment fragment = new NewsFragment();
-			Bundle args = new Bundle();
-			args.putInt(NewsFragment.SECTION_NUMBER, position + 1);
-			fragment.setArguments(args);
+			Fragment fragment = new ExonianFragment();
+			Bundle bundle = new Bundle();
+			switch (position) {
+			case 0:
+				bundle.putString("url", "http://theexonian.com/new/category/news");
+			case 1:
+				bundle.putString("url", "http://theexonian.com/new/category/humor");
+			}
+			fragment.setArguments(bundle);
 			return fragment;
 		}
 
@@ -98,9 +103,14 @@ public class HomeActivity extends FragmentActivity {
 		}
 	}
 	
-	public static class NewsFragment extends Fragment {
+	public static class ExonianFragment extends Fragment {
 		public static final String SECTION_NUMBER = "section_number";
-
+		private String url;
+		
+		public ExonianFragment() {
+			this.url = getArguments().getString("url");
+		}
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			super.onCreateView(inflater, container, savedInstanceState);
@@ -109,7 +119,7 @@ public class HomeActivity extends FragmentActivity {
 			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 			
-			String newsFeed = getPage("http://theexonian.com/new/category/news/?json=1");
+			String newsFeed = getPage(url);
 			String[] articleTitles = {};
 			String[] articleLinks = {};
 			String[] imageLinks = {};
@@ -208,4 +218,5 @@ public class HomeActivity extends FragmentActivity {
 		}
 		
 	}
+	
 }
