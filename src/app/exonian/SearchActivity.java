@@ -35,12 +35,7 @@ import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
-/**
- * @author Weihang Fan
- * 
- */
-public class SearchActivity extends ListActivity implements
-		OnQueryTextListener, OnCloseListener {
+public class SearchActivity extends ListActivity implements OnQueryTextListener, OnCloseListener {
 
 	// The SearchView for doing filtering.
 	SearchView mSearchView;
