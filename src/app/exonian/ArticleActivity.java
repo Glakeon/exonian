@@ -186,7 +186,7 @@ public class ArticleActivity extends FragmentActivity {
 					}
 
 				});
-				Log.d("exeter", Long.toString(db.insertArticle(titleText, authorText, finalContent, dateText)));
+				db.insertArticle(titleText, authorText, finalContent, dateText);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
