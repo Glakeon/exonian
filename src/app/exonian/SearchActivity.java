@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +35,6 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.TextView;
 
 /**
  * @author Weihang Fan
@@ -64,6 +65,7 @@ public class SearchActivity extends ListActivity implements
 			mAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1);
 			setListAdapter(mAdapter);
+			(new SearchArticle(this)).execute("http://theexonian.com/new/?s=" + query + "&json=1&include=title,url");
 		}
 	}
 
@@ -75,8 +77,7 @@ public class SearchActivity extends ListActivity implements
 		mSearchView = new SearchView(this);
 		mSearchView.setOnQueryTextListener(this);
 		mSearchView.setOnCloseListener(this);
-		mSearchView.setIconifiedByDefault(true);
-		mSearchView.setSubmitButtonEnabled(true);
+		mSearchView.setIconifiedByDefault(false);
 		item.setActionView(mSearchView);
 	}
 
@@ -180,13 +181,22 @@ public class SearchActivity extends ListActivity implements
 			try {
 				// Construct a JSON object and get the content of the post
 				JSONObject jsonObject = new JSONObject(result);
-				final String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
+				JSONArray jsonArray = jsonObject.getJSONArray("posts");
+				ArrayList<String> list = new ArrayList<String>();
+				if (jsonArray != null) { 
+				   int len = jsonArray.length();
+				   for (int i=0;i<len;i++){ 
+				    list.add(jsonArray.get(i).toString());
+				   } 
+				}
+				final ArrayList<String> copy = list;
 				
 				activity.runOnUiThread(new Runnable() {
 
 					@Override
 					public void run() {
-						((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
+						mAdapter.clear();
+						mAdapter.addAll(copy);
 					}
 
 				});
