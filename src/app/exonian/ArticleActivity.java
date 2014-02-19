@@ -54,7 +54,9 @@ public class ArticleActivity extends FragmentActivity {
 		
 		if (networkInfo != null && networkInfo.isConnected()) {
 			(new DownloadArticle(this)).execute(stringUrl);
-			(new DownloadImage(this)).execute(imageUrl);
+			if (imageUrl != null) {
+				(new DownloadImage(this)).execute(imageUrl);
+			}
 		} else {
 			Toast.makeText(this, "No network connection available.", Toast.LENGTH_LONG).show();
 		}
