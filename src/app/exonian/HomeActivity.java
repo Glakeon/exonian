@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -70,46 +69,38 @@ public class HomeActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			// Called to instantiate the fragment for the given page.
-			Fragment fragment = new ExonianFragment();
 			Bundle bundle = new Bundle();
 			switch (position) {
-			case 0:
-				bundle.putString("url", "http://theexonian.com/new/category/news");
-			case 1:
-				bundle.putString("url", "http://theexonian.com/new/category/humor");
+				case 0:
+					bundle.putString("url", "http://theexonian.com/new/category/news/?json=1&include=title,url,attachments");
+					break;
+				case 1:
+					bundle.putString("url", "http://theexonian.com/new/category/humor/?json=1");
+					break;
 			}
+			Fragment fragment = new ExonianFragment();
 			fragment.setArguments(bundle);
 			return fragment;
 		}
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages
-			return 3;
+			return 2;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			Locale l = Locale.getDefault();
 			switch (position) {
 			case 0:
 				return "News";
 			case 1:
 				return "Humor";
-			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
 			}
 			return null;
 		}
 	}
 	
 	public static class ExonianFragment extends Fragment {
-		public static final String SECTION_NUMBER = "section_number";
-		private String url;
-		
-		public ExonianFragment() {
-			this.url = getArguments().getString("url");
-		}
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -119,19 +110,19 @@ public class HomeActivity extends FragmentActivity {
 			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 			
-			String newsFeed = getPage(url);
+			String newsFeed = getPage(getArguments().getString("url"));
 			String[] articleTitles = {};
 			String[] articleLinks = {};
 			String[] imageLinks = {};
 			
 			try {
 				// Construct a JSON object and get the content of the post
-				JSONArray posts = (JSONArray) (new JSONObject(newsFeed)).get("posts");
+				JSONArray posts = (JSONArray) ((new JSONObject(newsFeed)).get("posts"));
 				articleTitles = new String[posts.length()];
 				articleLinks = new String[posts.length()];
 				imageLinks = new String[posts.length()];
 				for (int i = 0; i < posts.length(); i++) {
-					articleTitles[i] = posts.getJSONObject(i).getString("title");
+					articleTitles[i] = (posts.getJSONObject(i).getString("title")).replaceAll("&#[0-9]+;", "'");
 					articleLinks[i] = posts.getJSONObject(i).getString("url");
 					JSONArray attachments = posts.getJSONObject(i).getJSONArray("attachments");
 					if (attachments.length() > 0) {
