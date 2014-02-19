@@ -2,6 +2,7 @@ package app.exonian;
 
 public class Article {
 	private long id;
+	private String url;
 	private String title;
 	private String date;
 	private String author;
@@ -45,6 +46,14 @@ public class Article {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	// Will be used by the ArrayAdapter in the ListView
