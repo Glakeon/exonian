@@ -19,17 +19,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ListActivity;
-import android.app.LoaderManager;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,10 +31,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 /**
  * @author Weihang Fan
@@ -98,10 +90,6 @@ public class SearchActivity extends ListActivity implements
 		if (mCurFilter == null && newFilter == null) {
 			return true;
 		}
-		if (mCurFilter != null && mCurFilter.equals(newFilter)) {
-			return true;
-		}
-		mCurFilter = newFilter;
 		return true;
 	}
 
