@@ -1,6 +1,3 @@
-/**
- * 
- */
 package app.exonian;
 
 import java.io.BufferedReader;
@@ -36,12 +33,7 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
 
-/**
- * @author Weihang Fan
- * 
- */
-public class SearchActivity extends ListActivity implements
-		OnQueryTextListener, OnCloseListener {
+public class SearchActivity extends ListActivity implements OnQueryTextListener, OnCloseListener {
 
 	// The SearchView for doing filtering.
 	SearchView mSearchView;
