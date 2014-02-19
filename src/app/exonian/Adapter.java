@@ -47,7 +47,8 @@ public class Adapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+					+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS articles");
 			onCreate(db);
 		}
@@ -62,13 +63,15 @@ public class Adapter {
 		helper.close();
 	}
 
-	public long insertArticle(String title, String author, String content, String date) {
+	public long insertArticle(String title, String author, String content,
+			String date) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_TITLE, title);
 		initialValues.put(KEY_AUTHOR, author);
 		initialValues.put(KEY_CONTENT, content);
 		initialValues.put(KEY_DATE, date);
-		return db.insertWithOnConflict(DATABASE_TABLE, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+		return db.insertWithOnConflict(DATABASE_TABLE, null, initialValues,
+				SQLiteDatabase.CONFLICT_IGNORE);
 	}
 
 	private Article cursorToArticle(Cursor cursor) {
@@ -81,9 +84,22 @@ public class Adapter {
 		return article;
 	}
 
-	// ---retrieves a particular contact---
+	// get an article with an ID
 	public Article getArticle(long rowId) throws SQLException {
-		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE}, KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
+				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE },
+				KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		if (mCursor != null) {
+			mCursor.moveToFirst();
+		}
+		return cursorToArticle(mCursor);
+	}
+
+	// search for article
+	public Article searchArticle(String title) throws SQLException {
+		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
+				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE },
+				KEY_TITLE + "LIKE %" + title + "%", null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
