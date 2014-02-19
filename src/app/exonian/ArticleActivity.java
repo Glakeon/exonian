@@ -149,10 +149,10 @@ public class ArticleActivity extends FragmentActivity {
 			try {
 				// Construct a JSON object and get the content of the post
 				JSONObject jsonObject = new JSONObject(result);
-				String contentText = (String) ((JSONObject) jsonObject.get("post")).get("content");
-				final String titleText = (String) ((JSONObject) jsonObject.get("post")).get("title");
-				final String authorText = (String) ((JSONObject) ((JSONObject) jsonObject.get("post")).get("author")).get("name");
-				final String dateText = (String) ((JSONObject) jsonObject.get("post")).get("date");
+				String contentText = (String) jsonObject.getJSONObject("post").get("content");
+				final String titleText = (String) jsonObject.getJSONObject("post").get("title");
+				final String authorText = (String) jsonObject.getJSONObject("post").getJSONObject("author").get("name");
+				final String dateText = (String) jsonObject.getJSONObject("post").get("date");
 				
 				// Set the font to Ebrima
 				final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
