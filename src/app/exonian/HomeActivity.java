@@ -113,21 +113,28 @@ public class HomeActivity extends FragmentActivity {
 			String newsFeed = getPage("http://theexonian.com/new/category/news/?json=1");
 			String[] articleTitles = {};
 			String[] articleLinks = {};
+			String[] imageLinks = {};
 			
 			try {
 				// Construct a JSON object and get the content of the post
 				JSONArray posts = (JSONArray) (new JSONObject(newsFeed)).get("posts");
 				articleTitles = new String[posts.length()];
 				articleLinks = new String[posts.length()];
+				imageLinks = new String[posts.length()];
 				for (int i = 0; i < posts.length(); i++) {
 					articleTitles[i] = posts.getJSONObject(i).getString("title");
 					articleLinks[i] = posts.getJSONObject(i).getString("url");
+					JSONArray attachments = posts.getJSONObject(i).getJSONArray("attachments");
+					if (attachments.length() > 0) {
+						imageLinks[i] = attachments.getJSONObject(0).getString("url");
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
-			final String[] finalLinks = articleLinks;
+			final String[] finalArticleLinks = articleLinks;
+			final String[] finalImageLinks = imageLinks;
 	        View view = inflater.inflate(R.layout.news_fragment, container, false);
 	        ListView listView = (ListView) view.findViewById(R.id.list_news);
 	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.article_list, R.id.list_article_title, articleTitles);
@@ -137,9 +144,9 @@ public class HomeActivity extends FragmentActivity {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					String link = finalLinks[position];
 					Intent i = new Intent("android.intent.action.ArticleActivity");
-					i.putExtra("url", link);
+					i.putExtra("article_url", finalArticleLinks[position]);
+					i.putExtra("image_url", finalImageLinks[position]);
 					startActivity(i);
 				}
 	        	

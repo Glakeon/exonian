@@ -41,18 +41,17 @@ public class ArticleActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		final String stringUrl = getIntent().getStringExtra("url") + "?json=1";
+		final String stringUrl = getIntent().getStringExtra("article_url") + "?json=1";
+		final String imageUrl = getIntent().getStringExtra("image_url");
 		db = new Adapter(this);
 		db.open();
 		
 		setContentView(R.layout.article);
 		
-		// Connect to a specific article and image
-		final String imageUrl = "http://theexonian.com/new/wp-content/uploads/2014/02/DSC08103-700x466.jpg";
+		// Check to see if device is connected to internet
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		
-		// Make sure the device is connected
 		if (networkInfo != null && networkInfo.isConnected()) {
 			(new DownloadArticle(this)).execute(stringUrl);
 			(new DownloadImage(this)).execute(imageUrl);
