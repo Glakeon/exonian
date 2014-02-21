@@ -127,6 +127,13 @@ public class HomeActivity extends FragmentActivity {
 					JSONArray attachments = posts.getJSONObject(i).getJSONArray("attachments");
 					if (attachments.length() > 0) {
 						imageLinks[i] = attachments.getJSONObject(0).getString("url");
+					} else {
+						if (posts.getJSONObject(i).has("thumbnail_images")) {
+							JSONArray images = posts.getJSONObject(i).getJSONArray("thumbnail_images");
+							if (images.length() > 0) {
+								imageLinks[i] = ((JSONObject) (images.get(0))).getString("url");
+							}
+						}
 					}
 				}
 			} catch (Exception e) {
