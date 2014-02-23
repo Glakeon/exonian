@@ -29,6 +29,15 @@
             android:layout_height="wrap_content"
             android:paddingTop="5sp"
             android:textSize="15sp" />
+        
+        <ImageButton
+            android:paddingTop="10sp"
+    		android:layout_width="32sp"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/facebook"
+    		android:contentDescription="Facebook Logo"
+    		android:onClick="shareLink"
+    		style="?android:attr/borderlessButtonStyle" />
 
         <ImageView
             android:id="@+id/article_image"
