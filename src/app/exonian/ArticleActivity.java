@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -29,18 +30,36 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.FacebookDialog;
+
 public class ArticleActivity extends FragmentActivity {
 
-	Adapter db;
-	
+	private Adapter db;
+	private UiLifecycleHelper uiHelper;
+	private String link;
+    private Session.StatusCallback callback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+        	
+        }
+    };
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		uiHelper = new UiLifecycleHelper(this, callback);
+	    uiHelper.onCreate(savedInstanceState);
+	    
+	    link = getIntent().getStringExtra("article_url");
 		final String stringUrl = getIntent().getStringExtra("article_url") + "?json=1";
 		final String imageUrl = getIntent().getStringExtra("image_url");
 		db = new Adapter(this);
@@ -63,7 +82,58 @@ public class ArticleActivity extends FragmentActivity {
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    super.onActivityResult(requestCode, resultCode, data);
 
+	    uiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
+	        @Override
+	        public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
+	            Log.e("Activity", String.format("Error: %s", error.toString()));
+	        }
+
+	        @Override
+	        public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
+	            Log.i("Activity", "Success!");
+	        }
+	    });
+	}
+	
+	@Override
+	protected void onResume() {
+	    super.onResume();
+	    uiHelper.onResume();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+	    super.onSaveInstanceState(outState);
+	    uiHelper.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public void onPause() {
+	    super.onPause();
+	    uiHelper.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+	    super.onDestroy();
+	    uiHelper.onDestroy();
+	}
+	
+	public void shareLink(View view) {
+		if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+			// Publish the post using the Share Dialog
+			FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this).setLink(link).build();
+			uiHelper.trackPendingDialogCall(shareDialog.present());
+		} else {
+			Toast.makeText(this, "No", Toast.LENGTH_LONG).show();
+		}
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -150,7 +220,7 @@ public class ArticleActivity extends FragmentActivity {
 				// Construct a JSON object and get the content of the post
 				JSONObject jsonObject = new JSONObject(result);
 				String contentText = (String) jsonObject.getJSONObject("post").get("content");
-				final String titleText = (String) jsonObject.getJSONObject("post").get("title");
+				final String titleText = ((String) jsonObject.getJSONObject("post").get("title")).replaceAll("&#[0-9]+;", "'");
 				final String authorText = (String) jsonObject.getJSONObject("post").getJSONObject("author").get("name");
 				final String dateText = (String) jsonObject.getJSONObject("post").get("date");
 				
