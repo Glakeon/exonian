@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -77,37 +76,39 @@ public class HomeActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			// Called to instantiate the fragment for the given page.
-			Fragment fragment = new NewsFragment();
-			Bundle args = new Bundle();
-			args.putInt(NewsFragment.SECTION_NUMBER, position + 1);
-			fragment.setArguments(args);
+			Bundle bundle = new Bundle();
+			switch (position) {
+				case 0:
+					bundle.putString("url", "http://theexonian.com/new/category/news/?json=1&include=title,url,attachments");
+					break;
+				case 1:
+					bundle.putString("url", "http://theexonian.com/new/category/humor/?json=1");
+					break;
+			}
+			Fragment fragment = new ExonianFragment();
+			fragment.setArguments(bundle);
 			return fragment;
 		}
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages
-			return 3;
+			return 2;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			Locale l = Locale.getDefault();
 			switch (position) {
 			case 0:
 				return "News";
 			case 1:
 				return "Humor";
-			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
 			}
 			return null;
 		}
 	}
 	
-	public static class NewsFragment extends Fragment {
-		public static final String SECTION_NUMBER = "section_number";
-
+	public static class ExonianFragment extends Fragment {
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			super.onCreateView(inflater, container, savedInstanceState);
@@ -116,23 +117,30 @@ public class HomeActivity extends FragmentActivity {
 			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 			
-			String newsFeed = getPage("http://theexonian.com/new/category/news/?json=1");
+			String newsFeed = getPage(getArguments().getString("url"));
 			String[] articleTitles = {};
 			String[] articleLinks = {};
 			String[] imageLinks = {};
 			
 			try {
 				// Construct a JSON object and get the content of the post
-				JSONArray posts = (JSONArray) (new JSONObject(newsFeed)).get("posts");
+				JSONArray posts = (JSONArray) ((new JSONObject(newsFeed)).get("posts"));
 				articleTitles = new String[posts.length()];
 				articleLinks = new String[posts.length()];
 				imageLinks = new String[posts.length()];
 				for (int i = 0; i < posts.length(); i++) {
-					articleTitles[i] = posts.getJSONObject(i).getString("title");
+					articleTitles[i] = (posts.getJSONObject(i).getString("title")).replaceAll("&#[0-9]+;", "'");
 					articleLinks[i] = posts.getJSONObject(i).getString("url");
 					JSONArray attachments = posts.getJSONObject(i).getJSONArray("attachments");
 					if (attachments.length() > 0) {
 						imageLinks[i] = attachments.getJSONObject(0).getString("url");
+					} else {
+						if (posts.getJSONObject(i).has("thumbnail_images")) {
+							JSONArray images = posts.getJSONObject(i).getJSONArray("thumbnail_images");
+							if (images.length() > 0) {
+								imageLinks[i] = ((JSONObject) (images.get(0))).getString("url");
+							}
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -215,4 +223,5 @@ public class HomeActivity extends FragmentActivity {
 		}
 		
 	}
+	
 }
