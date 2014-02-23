@@ -175,6 +175,7 @@ public class ArticleActivity extends FragmentActivity {
 				// Do not get the CSS after the </p> tag for the content text
 				contentText = contentText.substring(0, contentText.indexOf("style="));
 				contentText = contentText.substring(0, contentText.lastIndexOf("</p>"));
+				contentText = contentText.replace("&#8217;", "'");
 
 				final String finalContent = contentText;
 

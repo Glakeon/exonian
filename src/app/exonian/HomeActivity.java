@@ -25,6 +25,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -58,6 +59,12 @@ public class HomeActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu and adds items to the action bar if it is present
 		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		startActivity(new Intent("android.intent.action.SearchActivity"));
 		return true;
 	}
 
@@ -166,7 +173,7 @@ public class HomeActivity extends FragmentActivity {
 					sb.append(line + "\n");
 				}
 				stream.close();
-				return sb.toString();
+				return sb.toString().replace("&#8217;", "'");
 			} catch (IOException e) {
 				return "Error loading the article.";
 			}

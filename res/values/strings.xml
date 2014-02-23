@@ -9,5 +9,6 @@
     <string name="mainpicture">Main Picture of Article</string>
     <string name="search_prompt">Search for:</string>
     <string name="search_hint">Title/Author/Content</string>
+    <string name="action_search">Search</string>
 
 </resources>

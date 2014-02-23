@@ -18,92 +18,65 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ListActivity;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnCloseListener;
-import android.widget.SearchView.OnQueryTextListener;
 
-public class SearchActivity extends ListActivity implements OnQueryTextListener, OnCloseListener {
+public class SearchActivity extends ListActivity {
 
-	// The SearchView for doing filtering.
-	SearchView mSearchView;
+	private ArrayAdapter<Article> mAdapter;
+	private EditText filterText;
+	private Activity ctx;
+	
+	private TextWatcher filterTextWatcher = new TextWatcher() {
 
-	// If non-null, this is the current filter the user has provided.
-	String mCurFilter;
+		public void afterTextChanged(Editable s) {
+		}
 
-	private ArrayAdapter<String> mAdapter;
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
+
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			(new SearchArticle(ctx)).execute("http://theexonian.com/new/?s=" + s + "&json=1&include=title,url");
+		}
+
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search);
+		ctx = this;
 
-		// Get the intent, verify the action and get the query
-		Intent intent = getIntent();
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
+		// verify the action and get the query
+		// Create an empty adapter we will use to display the loaded data.
+		mAdapter = new ArrayAdapter<Article>(this,
+				android.R.layout.simple_list_item_1);
+		setListAdapter(mAdapter);
 
-			// Create an empty adapter we will use to display the loaded data.
-			mAdapter = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1);
-			setListAdapter(mAdapter);
-			(new SearchArticle(this)).execute("http://theexonian.com/new/?s=" + query + "&json=1&include=title,url");
-		}
+		filterText = (EditText) findViewById(R.id.search_box);
+		filterText.addTextChangedListener(filterTextWatcher);
 	}
 
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		// Place an action bar item for searching.
-		MenuItem item = menu.add("Search");
-		item.setIcon(android.R.drawable.ic_menu_search);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		mSearchView = new SearchView(this);
-		mSearchView.setOnQueryTextListener(this);
-		mSearchView.setOnCloseListener(this);
-		mSearchView.setIconifiedByDefault(false);
-		item.setActionView(mSearchView);
-	}
-
-	public boolean onQueryTextChange(String newText) {
-		// Called when the action bar search text has changed. Update
-		// the search filter, and restart the loader to do a new query
-		// with this filter.
-		String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-		// Don't do anything if the filter hasn't actually changed.
-		// Prevents restarting the loader when restoring state.
-		if (mCurFilter == null && newFilter == null) {
-			return true;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean onQueryTextSubmit(String query) {
-		// Don't care about this.
-		return true;
-	}
-
-	@Override
-	public boolean onClose() {
-		if (!TextUtils.isEmpty(mSearchView.getQuery())) {
-			mSearchView.setQuery(null, true);
-		}
-		return true;
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent i = new Intent("android.intent.action.ArticleActivity");
-		i.putExtra("url", mAdapter.getItem(position));
+		i.putExtra("article_url", mAdapter.getItem(position).getUrl());
 		startActivity(i);
 	}
 	
@@ -126,7 +99,7 @@ public class SearchActivity extends ListActivity implements OnQueryTextListener,
 					sb.append(line + "\n");
 				}
 				stream.close();
-				return sb.toString();
+				return sb.toString().replace("&#8217;", "'");
 			} catch (IOException e) {
 				return "Error loading the article.";
 			}
@@ -171,17 +144,21 @@ public class SearchActivity extends ListActivity implements OnQueryTextListener,
 		@Override
 		protected void onPostExecute(String result) {
 			try {
-				// Construct a JSON object and get the content of the post
+				// Construct a JSON object and set the adapter to the search result
 				JSONObject jsonObject = new JSONObject(result);
 				JSONArray jsonArray = jsonObject.getJSONArray("posts");
-				ArrayList<String> list = new ArrayList<String>();
+				ArrayList<Article> list = new ArrayList<Article>();
 				if (jsonArray != null) { 
 				   int len = jsonArray.length();
-				   for (int i=0;i<len;i++){ 
-				    list.add(jsonArray.get(i).toString());
+				   for (int i = 0; i < len; i++){ 
+					   Article toAdd = new Article();
+					   JSONObject post = jsonArray.getJSONObject(i);
+					   toAdd.setTitle(post.getString("title"));
+					   toAdd.setUrl(post.getString("url"));
+					   list.add(toAdd);
 				   } 
 				}
-				final ArrayList<String> copy = list;
+				final ArrayList<Article> copy = list;
 				
 				activity.runOnUiThread(new Runnable() {
 
