@@ -66,7 +66,7 @@ public class HomeActivity extends FragmentActivity {
 		startActivity(new Intent("android.intent.action.SearchActivity"));
 		return true;
 	}
-
+	
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {
@@ -223,5 +223,6 @@ public class HomeActivity extends FragmentActivity {
 		}
 		
 	}
+
 	
 }

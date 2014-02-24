@@ -8,8 +8,9 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
     <string name="mainpicture">Main Picture of Article</string>
-    <string name="search_prompt">Search for:</string>
-    <string name="search_hint">Title/Author/Content</string>
+    <string name="search_prompt">Search</string>
+    <string name="search_hint">Keyword</string>
     <string name="action_search">Search</string>
+    <string name="facebook_logo">Facebook Logo</string>
 
 </resources>
