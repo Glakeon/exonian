@@ -136,11 +136,11 @@ public class ArticleActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu and adds items to the action bar if it is present
 		getMenuInflater().inflate(R.menu.home, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -148,6 +148,9 @@ public class ArticleActivity extends FragmentActivity {
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		default:
+			startActivity(new Intent("android.intent.action.SearchActivity"));
+			break;
 		}
 		return false;
 		
