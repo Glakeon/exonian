@@ -13,15 +13,14 @@ public class Adapter {
 	static final String KEY_TITLE = "title";
 	static final String KEY_AUTHOR = "author";
 	static final String KEY_CONTENT = "content";
-	static final String KEY_URL = "url";
 	static final String KEY_DATE = "date";
 	static final String TAG = "Adapter";
 
 	static final String DATABASE_NAME = "Exonian";
 	static final String DATABASE_TABLE = "articles";
-	static final int DATABASE_VERSION = 4;
+	static final int DATABASE_VERSION = 1;
 
-	static final String DATABASE_CREATE = "CREATE TABLE IF NOT EXISTS articles(_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, author TEXT NOT NULL, content TEXT NOT NULL, date TEXT NOT NULL, url TEXT NOT NULL);";
+	static final String DATABASE_CREATE = "CREATE VIRTUAL TABLE IF NOT EXISTS articles USING fts4(_id INTEGER PRIMARY KEY AUTOINCREMENT, + title TEXT NOT NULL UNIQUE, author TEXT NOT NULL, content TEXT NOT NULL);";
 
 	final Context context;
 	DatabaseHelper helper;
@@ -65,21 +64,14 @@ public class Adapter {
 	}
 
 	public long insertArticle(String title, String author, String content,
-			String date, String url) {
+			String date) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_TITLE, title);
 		initialValues.put(KEY_AUTHOR, author);
 		initialValues.put(KEY_CONTENT, content);
 		initialValues.put(KEY_DATE, date);
-		initialValues.put(KEY_URL, url);
-		long rowid;
-		try {
-			rowid = db.insert(DATABASE_TABLE, null, initialValues);
-			return rowid;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
+		return db.insertWithOnConflict(DATABASE_TABLE, null, initialValues,
+				SQLiteDatabase.CONFLICT_IGNORE);
 	}
 
 	private Article cursorToArticle(Cursor cursor) {
@@ -89,14 +81,13 @@ public class Adapter {
 		article.setAuthor(cursor.getString(2));
 		article.setContent(cursor.getString(3));
 		article.setContent(cursor.getString(4));
-		article.setUrl(cursor.getString(5));
 		return article;
 	}
 
 	// get an article with an ID
 	public Article getArticle(long rowId) throws SQLException {
 		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
-				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL },
+				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE },
 				KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
@@ -105,16 +96,14 @@ public class Adapter {
 	}
 
 	// search for article
-	public Article searchArticlesByKey (String key, String value) throws SQLException {
+	public Cursor searchArticlesByKey (String value, String key) throws SQLException {
 		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
-				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL },
-				key + "=\"" + value + "\"", null, null, null, null, null);
-		if (mCursor != null && mCursor.getCount() > 0) {
+				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE },
+				key + "LIKE %" + value + "%", null, null, null, null, null);
+		if (mCursor != null) {
 			mCursor.moveToFirst();
-			return cursorToArticle(mCursor);
-		} else {
-			return null;
 		}
+		return mCursor;
 	}
 
 }

@@ -127,64 +127,38 @@ public class ArticleActivity extends FragmentActivity {
 
 		@Override
 		protected String doInBackground(String... urls) {
-			Adapter adapter = new Adapter(activity);
-			adapter.open();
-			Article ret = adapter.searchArticlesByKey("url", urls[0]);
-			if (ret == null) {
-				InputStream is = null;
-				try {
-					// The URL is the first in the array
-					URI url = URI.create(urls[0]);
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpGet httpget = new HttpGet(url);
-					HttpResponse response = httpclient.execute(httpget);
-					HttpEntity entity = response.getEntity();
+			InputStream is = null;
+			try {
+				// The URL is the first in the array
+				URI url = URI.create(urls[0]);
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httpget = new HttpGet(url);
+				HttpResponse response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+				
+				// Starts the query
+				is = entity.getContent();
+				if (response.getStatusLine().getStatusCode() == 200) {
 					
-					// Starts the query
-					is = entity.getContent();
-					if (response.getStatusLine().getStatusCode() == 200) {
-						
-						// Convert the InputStream into a string
-						String contentAsString = readIt(is);
-						return contentAsString;
-					} else {
-						return "Error loading the article.";
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					// Close the InputStream
-					if (is != null) {
-						try {
-							is.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
+					// Convert the InputStream into a string
+					String contentAsString = readIt(is);
+					return contentAsString;
+				} else {
+					return "Error loading the article.";
 				}
-				return "Error loading the article.";
-			} else {
-				try {
-					JSONObject articleObject = new JSONObject();
-					
-					articleObject.put("content", ret.getContent());
-					articleObject.put("title", ret.getTitle());
-					
-					JSONObject authorObject = new JSONObject();
-					authorObject.put("name", ret.getAuthor());
-					articleObject.put("author", authorObject);
-					
-					articleObject.put("date", ret.getDate());
-					articleObject.put("url", ret.getUrl());
-					
-					JSONObject wrapper = new JSONObject();
-					wrapper.put("post", articleObject);
-					return wrapper.toString();
-				} catch (JSONException e) {
-					e.printStackTrace();
-					return "";
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				// Close the InputStream
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
+			return "Error loading the article.";
 		}
 
 		@Override
@@ -192,12 +166,10 @@ public class ArticleActivity extends FragmentActivity {
 			try {
 				// Construct a JSON object and get the content of the post
 				JSONObject jsonObject = new JSONObject(result);
-				JSONObject post = jsonObject.getJSONObject("post");
-				String contentText = post.getString("content");
-				final String titleText = post.getString("title").replaceAll("&#[0-9]+;", "'");
-				final String authorText = post.getJSONObject("author").getString("name");
-				final String dateText = post.getString("date");
-				final String urlText = post.getString("url");
+				String contentText = (String) jsonObject.getJSONObject("post").get("content");
+				final String titleText = ((String) jsonObject.getJSONObject("post").get("title")).replaceAll("&#[0-9]+;", "'");
+				final String authorText = (String) jsonObject.getJSONObject("post").getJSONObject("author").get("name");
+				final String dateText = (String) jsonObject.getJSONObject("post").get("date");
 				
 				// Set the font to Ebrima
 				final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
@@ -235,7 +207,7 @@ public class ArticleActivity extends FragmentActivity {
 				});
 
 				try {
-					db.insertArticle(titleText, authorText, finalContent, dateText, urlText);
+					db.insertArticle(titleText, authorText, finalContent, dateText);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
