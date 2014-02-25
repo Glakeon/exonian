@@ -82,8 +82,18 @@ public class HomeActivity extends FragmentActivity {
 					bundle.putString("url", "http://theexonian.com/new/category/news/?json=1&include=title,url,attachments");
 					break;
 				case 1:
-					bundle.putString("url", "http://theexonian.com/new/category/humor/?json=1");
+					bundle.putString("url", "http://theexonian.com/new/category/humor/?json=1&include=title,url,attachments");
 					break;
+				case 2:
+					bundle.putString("url", "http://theexonian.com/new/category/exeter-life/?json=1&include=title,url,attachments");
+					break;
+				case 3:
+					bundle.putString("url", "http://theexonian.com/new/category/opinion/?json=1&include=title,url,attachments");
+					break;
+				case 4:
+					bundle.putString("url", "http://theexonian.com/new/category/sports/?json=1&include=title,url,attachments");
+					break;
+					
 			}
 			Fragment fragment = new ExonianFragment();
 			fragment.setArguments(bundle);
@@ -92,7 +102,7 @@ public class HomeActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			return 2;
+			return 5;
 		}
 
 		@Override
@@ -102,6 +112,12 @@ public class HomeActivity extends FragmentActivity {
 				return "News";
 			case 1:
 				return "Humor";
+			case 2:
+				return "Life";
+			case 3:
+				return "Opinion";
+			case 4:
+				return "Sports";
 			}
 			return null;
 		}

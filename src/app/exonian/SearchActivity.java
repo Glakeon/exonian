@@ -98,7 +98,7 @@ public class SearchActivity extends ListActivity {
 					sb.append(line + "\n");
 				}
 				stream.close();
-				return sb.toString().replace("&#8217;", "'");
+				return sb.toString().replaceAll("&#[0-9]+;", "'");
 			} catch (IOException e) {
 				return "Error loading the article.";
 			}
