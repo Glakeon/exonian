@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -35,19 +34,22 @@ public class SearchActivity extends ListActivity {
 
 	private ArrayAdapter<Article> mAdapter;
 	private EditText filterText;
-	private Activity ctx;
+	private Activity ctx = this;
 	
 	private TextWatcher filterTextWatcher = new TextWatcher() {
-
+		
+		@Override
 		public void afterTextChanged(Editable s) {
+			
 		}
-
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
+		
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			
 		}
-
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
+		
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			(new SearchArticle(ctx)).execute("http://theexonian.com/new/?s=" + s + "&json=1&include=title,url");
 		}
 
@@ -57,12 +59,9 @@ public class SearchActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search);
-		ctx = this;
 
-		// verify the action and get the query
 		// Create an empty adapter we will use to display the loaded data.
-		mAdapter = new ArrayAdapter<Article>(this,
-				android.R.layout.simple_list_item_1);
+		mAdapter = new ArrayAdapter<Article>(this, android.R.layout.simple_list_item_1);
 		setListAdapter(mAdapter);
 
 		filterText = (EditText) findViewById(R.id.search_box);
@@ -99,7 +98,7 @@ public class SearchActivity extends ListActivity {
 					sb.append(line + "\n");
 				}
 				stream.close();
-				return sb.toString().replace("&#8217;", "'");
+				return sb.toString().replaceAll("&#[0-9]+;", "'");
 			} catch (IOException e) {
 				return "Error loading the article.";
 			}
@@ -156,12 +155,11 @@ public class SearchActivity extends ListActivity {
 					   toAdd.setTitle(post.getString("title"));
 					   toAdd.setUrl(post.getString("url"));
 					   list.add(toAdd);
-				   } 
+				   }
 				}
 				final ArrayList<Article> copy = list;
 				
 				activity.runOnUiThread(new Runnable() {
-
 					@Override
 					public void run() {
 						mAdapter.clear();

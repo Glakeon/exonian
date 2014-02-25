@@ -31,33 +31,28 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
 
 public class ArticleActivity extends FragmentActivity {
 
 	private Adapter db;
-	private UiLifecycleHelper uiHelper;
+	private ShareActionProvider mShareActionProvider;
 	private String link;
+<<<<<<< HEAD
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
         }
     };
+=======
+>>>>>>> 74e0687d0eef27dd7ed62bcbdde1b8230ba43c4d
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		uiHelper = new UiLifecycleHelper(this, callback);
-	    uiHelper.onCreate(savedInstanceState);
 	    
 	    link = getIntent().getStringExtra("article_url");
 		final String stringUrl = getIntent().getStringExtra("article_url") + "?json=1";
@@ -84,63 +79,19 @@ public class ArticleActivity extends FragmentActivity {
 	}
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    super.onActivityResult(requestCode, resultCode, data);
-
-	    uiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
-	        @Override
-	        public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
-	            Log.e("Activity", String.format("Error: %s", error.toString()));
-	        }
-
-	        @Override
-	        public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
-	            Log.i("Activity", "Success!");
-	        }
-	    });
-	}
-	
-	@Override
-	protected void onResume() {
-	    super.onResume();
-	    uiHelper.onResume();
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-	    super.onSaveInstanceState(outState);
-	    uiHelper.onSaveInstanceState(outState);
-	}
-
-	@Override
-	public void onPause() {
-	    super.onPause();
-	    uiHelper.onPause();
-	}
-
-	@Override
-	public void onDestroy() {
-	    super.onDestroy();
-	    uiHelper.onDestroy();
-	}
-	
-	public void shareLink(View view) {
-		if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
-			// Publish the post using the Share Dialog
-			FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this).setLink(link).build();
-			uiHelper.trackPendingDialogCall(shareDialog.present());
-		} else {
-			Toast.makeText(this, "No", Toast.LENGTH_LONG).show();
-		}
-	}
-	
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu and adds items to the action bar if it is present
 		getMenuInflater().inflate(R.menu.home, menu);
+		MenuItem item = menu.findItem(R.id.menu_item_share);
+		mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+		Intent i = new Intent();
+		i.setAction(Intent.ACTION_SEND);
+		i.putExtra(Intent.EXTRA_TEXT, link);
+		i.setType("text/plain");
+		mShareActionProvider.setShareIntent(i);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -148,6 +99,11 @@ public class ArticleActivity extends FragmentActivity {
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		case R.id.search_button:
+			startActivity(new Intent("android.intent.action.SearchActivity"));
+			break;
+		default:
+			break;
 		}
 		return false;
 		
