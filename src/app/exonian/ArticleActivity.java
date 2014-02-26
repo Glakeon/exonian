@@ -104,6 +104,7 @@ public class ArticleActivity extends FragmentActivity {
 	class DownloadArticle extends AsyncTask<String, Void, String> {
 		
 		private Activity activity;
+		private Article cached = null;
 		
 		public DownloadArticle(Activity activity) {
 			this.activity = activity;
@@ -127,9 +128,7 @@ public class ArticleActivity extends FragmentActivity {
 
 		@Override
 		protected String doInBackground(String... urls) {
-			Adapter adapter = new Adapter(activity);
-			adapter.open();
-			Article ret = adapter.searchArticlesByKey("url", urls[0]);
+			Article ret = db.searchArticle(urls[0]);
 			if (ret == null) {
 				InputStream is = null;
 				try {
@@ -163,84 +162,90 @@ public class ArticleActivity extends FragmentActivity {
 					}
 				}
 				return "Error loading the article.";
-			} else {
-				try {
-					JSONObject articleObject = new JSONObject();
-					
-					articleObject.put("content", ret.getContent());
-					articleObject.put("title", ret.getTitle());
-					
-					JSONObject authorObject = new JSONObject();
-					authorObject.put("name", ret.getAuthor());
-					articleObject.put("author", authorObject);
-					
-					articleObject.put("date", ret.getDate());
-					articleObject.put("url", ret.getUrl());
-					
-					JSONObject wrapper = new JSONObject();
-					wrapper.put("post", articleObject);
-					return wrapper.toString();
-				} catch (JSONException e) {
-					e.printStackTrace();
-					return "";
-				}
+			}
+			else {
+				cached = ret;
+				return "";
 			}
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-			try {
-				// Construct a JSON object and get the content of the post
-				JSONObject jsonObject = new JSONObject(result);
-				JSONObject post = jsonObject.getJSONObject("post");
-				String contentText = post.getString("content");
-				final String titleText = post.getString("title").replaceAll("&#[0-9]+;", "'");
-				final String authorText = post.getJSONObject("author").getString("name");
-				final String dateText = post.getString("date");
-				final String urlText = post.getString("url");
-				
-				// Set the font to Ebrima
-				final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
-				
+			if (cached == null) {
+				try {
+					// Construct a JSON object and get the content of the post
+					JSONObject jsonObject = new JSONObject(result);
+					JSONObject post = jsonObject.getJSONObject("post");
+					final String urlText = post.getString("url");
+					String contentText = post.getString("content");
+					final String titleText = post.getString("title").replaceAll("&#[0-9]+;", "'");
+					final String authorText = post.getJSONObject("author").getString("name");
+					final String dateText = post.getString("date");
+					
+					// Set the font to Ebrima
+					final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
+					
+					activity.runOnUiThread(new Runnable() {
+	
+						@Override
+						public void run() {
+							((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
+							((TextView) activity.findViewById(R.id.article_author)).setText(authorText);
+							((TextView) activity.findViewById(R.id.article_date)).setText(dateText);
+	
+							((TextView) activity.findViewById(R.id.article_content)).setTypeface(tf);
+							((TextView) activity.findViewById(R.id.article_title)).setTypeface(tf, Typeface.BOLD);
+							((TextView) activity.findViewById(R.id.article_author)).setTypeface(tf, Typeface.ITALIC);
+						}
+	
+					});
+	
+					// Do not get the CSS after the </p> tag for the content text
+					contentText = contentText.substring(0, contentText.indexOf("style="));
+					contentText = contentText.substring(0, contentText.lastIndexOf("</p>"));
+					contentText = contentText.replace("&#8217;", "'");
+	
+					final String finalContent = contentText;
+	
+					// Run the UI changes in the UI thread per thread policy.
+					activity.runOnUiThread(new Runnable() {
+	
+						@Override
+						public void run() {
+							((TextView) activity.findViewById(R.id.article_content)).setText(Html.fromHtml(finalContent));
+						}
+	
+					});
+	
+					try {
+						db.insertArticle(titleText, authorText, finalContent, dateText, urlText + "?json=1");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
 				activity.runOnUiThread(new Runnable() {
 
+					// Set the font to Ebrima
+					final Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/ebrima.ttf");
+					
 					@Override
 					public void run() {
-						((TextView) activity.findViewById(R.id.article_title)).setText(titleText);
-						((TextView) activity.findViewById(R.id.article_author)).setText(authorText);
-						((TextView) activity.findViewById(R.id.article_date)).setText(dateText);
+						((TextView) activity.findViewById(R.id.article_title)).setText(cached.getTitle());
+						((TextView) activity.findViewById(R.id.article_author)).setText(cached.getAuthor());
+						((TextView) activity.findViewById(R.id.article_date)).setText(cached.getDate());
 
 						((TextView) activity.findViewById(R.id.article_content)).setTypeface(tf);
 						((TextView) activity.findViewById(R.id.article_title)).setTypeface(tf, Typeface.BOLD);
 						((TextView) activity.findViewById(R.id.article_author)).setTypeface(tf, Typeface.ITALIC);
+						
+						((TextView) activity.findViewById(R.id.article_content)).setText(Html.fromHtml(cached.getContent()));
 					}
 
 				});
-
-				// Do not get the CSS after the </p> tag for the content text
-				contentText = contentText.substring(0, contentText.indexOf("style="));
-				contentText = contentText.substring(0, contentText.lastIndexOf("</p>"));
-				contentText = contentText.replace("&#8217;", "'");
-
-				final String finalContent = contentText;
-
-				// Run the UI changes in the UI thread per thread policy.
-				activity.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						((TextView) activity.findViewById(R.id.article_content)).setText(Html.fromHtml(finalContent));
-					}
-
-				});
-
-				try {
-					Log.d("EXETER", Long.toString(db.insertArticle(titleText, authorText, finalContent, dateText, urlText)));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
 		}
 

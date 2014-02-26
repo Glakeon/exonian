@@ -49,6 +49,17 @@ public class HomeActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Create the adapter that will return a fragment for each of the three primary sections of the app
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+		// Set up the ViewPager with the sections adapter
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+	}
+	
 	public void showArticle(View view) {
 		Intent i = new Intent("android.intent.action.ArticleActivity");
 		startActivity(i);

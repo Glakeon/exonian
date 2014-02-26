@@ -13,15 +13,15 @@ public class Adapter {
 	static final String KEY_TITLE = "title";
 	static final String KEY_AUTHOR = "author";
 	static final String KEY_CONTENT = "content";
-	static final String KEY_URL = "url";
 	static final String KEY_DATE = "date";
+	static final String KEY_URL = "url";
 	static final String TAG = "Adapter";
 
 	static final String DATABASE_NAME = "Exonian";
 	static final String DATABASE_TABLE = "articles";
-	static final int DATABASE_VERSION = 4;
+	static final int DATABASE_VERSION = 8;
 
-	static final String DATABASE_CREATE = "CREATE TABLE IF NOT EXISTS articles(_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, author TEXT NOT NULL, content TEXT NOT NULL, date TEXT NOT NULL, url TEXT NOT NULL);";
+	static final String DATABASE_CREATE = "CREATE TABLE IF NOT EXISTS articles (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE, author TEXT NOT NULL, content TEXT NOT NULL, date TEXT NOT NULL, url TEXT NOT NULL);";
 
 	final Context context;
 	DatabaseHelper helper;
@@ -72,14 +72,7 @@ public class Adapter {
 		initialValues.put(KEY_CONTENT, content);
 		initialValues.put(KEY_DATE, date);
 		initialValues.put(KEY_URL, url);
-		long rowid;
-		try {
-			rowid = db.insert(DATABASE_TABLE, null, initialValues);
-			return rowid;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
+		return db.insertOrThrow(DATABASE_TABLE, null, initialValues);
 	}
 
 	private Article cursorToArticle(Cursor cursor) {
@@ -88,7 +81,7 @@ public class Adapter {
 		article.setTitle(cursor.getString(1));
 		article.setAuthor(cursor.getString(2));
 		article.setContent(cursor.getString(3));
-		article.setContent(cursor.getString(4));
+		article.setDate(cursor.getString(4));
 		article.setUrl(cursor.getString(5));
 		return article;
 	}
@@ -105,16 +98,18 @@ public class Adapter {
 	}
 
 	// search for article
-	public Article searchArticlesByKey (String key, String value) throws SQLException {
+	public Article searchArticle (String url) throws SQLException {
 		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
 				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL },
-				key + "=\"" + value + "\"", null, null, null, null, null);
-		if (mCursor != null && mCursor.getCount() > 0) {
+				KEY_URL + "=\"" + url + "\"", null, null, null, null, null);
+
+		if (mCursor != null) {
 			mCursor.moveToFirst();
-			return cursorToArticle(mCursor);
-		} else {
-			return null;
 		}
+		if (mCursor.getCount() > 0)
+			return cursorToArticle(mCursor);
+		else
+			return null;
 	}
 
 }
