@@ -14,7 +14,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -30,34 +33,44 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+import app.exonian.ArticleActivity.DownloadArticle;
+import app.exonian.ArticleActivity.DownloadImage;
 
 public class HomeActivity extends FragmentActivity {
 
 	SectionsPagerAdapter mSectionsPagerAdapter;
 	ViewPager mViewPager;
+	boolean connected = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
-
-		// Create the adapter that will return a fragment for each of the three primary sections of the app
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-		// Set up the ViewPager with the sections adapter
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// Create the adapter that will return a fragment for each of the three primary sections of the app
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		
+		// Check to see if device is connected to internet
+		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+		
+		if (networkInfo != null && networkInfo.isConnected()) {
+			if (connected == false) {
+				// Create the adapter that will return a fragment for each of the three primary sections of the app
+				mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+				// Set up the ViewPager with the sections adapter
+				mViewPager = (ViewPager) findViewById(R.id.pager);
+				mViewPager.setAdapter(mSectionsPagerAdapter);
+				connected = true;
+			}
+		} else {
+			connected = false;
+			Toast.makeText(this, "No network connection available.", Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	public void showArticle(View view) {
