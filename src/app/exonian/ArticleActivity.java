@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.HashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -41,14 +40,6 @@ public class ArticleActivity extends FragmentActivity {
 	private Adapter db;
 	private ShareActionProvider mShareActionProvider;
 	private String link;
-<<<<<<< HEAD
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-        }
-    };
-=======
->>>>>>> 74e0687d0eef27dd7ed62bcbdde1b8230ba43c4d
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -244,7 +235,7 @@ public class ArticleActivity extends FragmentActivity {
 				});
 
 				try {
-					db.insertArticle(titleText, authorText, finalContent, dateText, urlText);
+					Log.d("EXETER", Long.toString(db.insertArticle(titleText, authorText, finalContent, dateText, urlText)));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
