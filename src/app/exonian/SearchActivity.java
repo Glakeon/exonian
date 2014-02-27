@@ -77,7 +77,6 @@ public class SearchActivity extends ListActivity {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent i = new Intent("android.intent.action.ArticleActivity");
 		i.putExtra("article_url", mAdapter.getItem(position).getUrl());
-		i.putExtra("image_url", mAdapter.getItem(position).getImageUrl());
 		startActivity(i);
 	}
 	
