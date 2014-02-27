@@ -7,6 +7,7 @@ public class Article {
 	private String date;
 	private String author;
 	private String content;
+	private String imageUrl;
 
 	public long getId() {
 		return id;
@@ -30,6 +31,14 @@ public class Article {
 	
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+	
+	public void setImageUrl(String url) {
+		this.imageUrl = url;
+	}
+	
+	public String getImageUrl() {
+		return imageUrl;
 	}
 	
 	public String getContent() {

@@ -34,8 +34,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import app.exonian.ArticleActivity.DownloadArticle;
-import app.exonian.ArticleActivity.DownloadImage;
 
 public class HomeActivity extends FragmentActivity {
 
@@ -73,6 +71,7 @@ public class HomeActivity extends FragmentActivity {
 		}
 	}
 	
+	// Called when the user clicks on an item in the ListView
 	public void showArticle(View view) {
 		Intent i = new Intent("android.intent.action.ArticleActivity");
 		startActivity(i);
@@ -99,7 +98,7 @@ public class HomeActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			// Called to instantiate the fragment for the given page.
+			// Called to instantiate the fragment for the given category
 			Bundle bundle = new Bundle();
 			switch (position) {
 				case 0:
@@ -157,6 +156,7 @@ public class HomeActivity extends FragmentActivity {
 			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 			
+			// Place for storing article content
 			String newsFeed = getPage(getArguments().getString("url"));
 			String[] articleTitles = {};
 			String[] articleLinks = {};
@@ -171,6 +171,8 @@ public class HomeActivity extends FragmentActivity {
 				for (int i = 0; i < posts.length(); i++) {
 					articleTitles[i] = (posts.getJSONObject(i).getString("title")).replaceAll("&#[0-9]+;", "'");
 					articleLinks[i] = posts.getJSONObject(i).getString("url");
+					
+					// Get the image if it exists
 					JSONArray attachments = posts.getJSONObject(i).getJSONArray("attachments");
 					if (attachments.length() > 0) {
 						imageLinks[i] = attachments.getJSONObject(0).getString("url");
@@ -198,7 +200,8 @@ public class HomeActivity extends FragmentActivity {
 	        listView.setAdapter(adapter);
 	        
 	        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+	        	
+	        	// Go to the ArticleActivity with the specified URL
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					Intent i = new Intent("android.intent.action.ArticleActivity");

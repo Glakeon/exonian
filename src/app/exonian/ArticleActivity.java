@@ -45,6 +45,7 @@ public class ArticleActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	    
+		// Get the information passed into ArticleActivity
 	    link = getIntent().getStringExtra("article_url");
 		final String stringUrl = getIntent().getStringExtra("article_url") + "?json=1";
 		final String imageUrl = getIntent().getStringExtra("image_url");
@@ -57,6 +58,7 @@ public class ArticleActivity extends FragmentActivity {
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		
+		// Download the article and image
 		if (networkInfo != null && networkInfo.isConnected()) {
 			(new DownloadArticle(this)).execute(stringUrl);
 			if (imageUrl != null) {
@@ -74,6 +76,8 @@ public class ArticleActivity extends FragmentActivity {
 		// Inflate the menu and adds items to the action bar if it is present
 		getMenuInflater().inflate(R.menu.home, menu);
 		MenuItem item = menu.findItem(R.id.menu_item_share);
+		
+		// Set the share intent to enable sharing
 		mShareActionProvider = (ShareActionProvider) item.getActionProvider();
 		Intent i = new Intent();
 		i.setAction(Intent.ACTION_SEND);
@@ -97,7 +101,6 @@ public class ArticleActivity extends FragmentActivity {
 			break;
 		}
 		return false;
-		
 	}
 	
 	// Task to download the content from the Article
@@ -218,6 +221,7 @@ public class ArticleActivity extends FragmentActivity {
 					});
 	
 					try {
+						// Insert the article into the database
 						db.insertArticle(titleText, authorText, finalContent, dateText, urlText + "?json=1");
 					} catch (Exception e) {
 						e.printStackTrace();

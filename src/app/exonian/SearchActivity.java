@@ -48,6 +48,7 @@ public class SearchActivity extends ListActivity {
 			
 		}
 		
+		// Execute the SearchArticle class with the specified search query
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			(new SearchArticle(ctx)).execute("http://theexonian.com/new/?s=" + s + "&json=1&include=title,url");
@@ -76,6 +77,7 @@ public class SearchActivity extends ListActivity {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent i = new Intent("android.intent.action.ArticleActivity");
 		i.putExtra("article_url", mAdapter.getItem(position).getUrl());
+		i.putExtra("image_url", mAdapter.getItem(position).getImageUrl());
 		startActivity(i);
 	}
 	
