@@ -14,7 +14,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -30,36 +33,45 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class HomeActivity extends FragmentActivity {
 
 	SectionsPagerAdapter mSectionsPagerAdapter;
 	ViewPager mViewPager;
+	boolean connected = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
-
-		// Create the adapter that will return a fragment for each of the three primary sections of the app
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-		// Set up the ViewPager with the sections adapter
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// Create the adapter that will return a fragment for each of the three primary sections of the app
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		
+		// Check to see if device is connected to internet
+		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+		
+		if (networkInfo != null && networkInfo.isConnected()) {
+			if (connected == false) {
+				// Create the adapter that will return a fragment for each of the three primary sections of the app
+				mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+				// Set up the ViewPager with the sections adapter
+				mViewPager = (ViewPager) findViewById(R.id.pager);
+				mViewPager.setAdapter(mSectionsPagerAdapter);
+				connected = true;
+			}
+		} else {
+			connected = false;
+			Toast.makeText(this, "No network connection available.", Toast.LENGTH_LONG).show();
+		}
 	}
 	
+	// Called when the user clicks on an item in the ListView
 	public void showArticle(View view) {
 		Intent i = new Intent("android.intent.action.ArticleActivity");
 		startActivity(i);
@@ -86,7 +98,7 @@ public class HomeActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			// Called to instantiate the fragment for the given page.
+			// Called to instantiate the fragment for the given category
 			Bundle bundle = new Bundle();
 			switch (position) {
 				case 0:
@@ -144,6 +156,7 @@ public class HomeActivity extends FragmentActivity {
 			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 			
+			// Place for storing article content
 			String newsFeed = getPage(getArguments().getString("url"));
 			String[] articleTitles = {};
 			String[] articleLinks = {};
@@ -158,6 +171,8 @@ public class HomeActivity extends FragmentActivity {
 				for (int i = 0; i < posts.length(); i++) {
 					articleTitles[i] = (posts.getJSONObject(i).getString("title")).replaceAll("&#[0-9]+;", "'");
 					articleLinks[i] = posts.getJSONObject(i).getString("url");
+					
+					// Get the image if it exists
 					JSONArray attachments = posts.getJSONObject(i).getJSONArray("attachments");
 					if (attachments.length() > 0) {
 						imageLinks[i] = attachments.getJSONObject(0).getString("url");
@@ -185,7 +200,8 @@ public class HomeActivity extends FragmentActivity {
 	        listView.setAdapter(adapter);
 	        
 	        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+	        	
+	        	// Go to the ArticleActivity with the specified URL
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					Intent i = new Intent("android.intent.action.ArticleActivity");

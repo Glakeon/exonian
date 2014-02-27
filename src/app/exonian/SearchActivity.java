@@ -48,6 +48,7 @@ public class SearchActivity extends ListActivity {
 			
 		}
 		
+		// Execute the SearchArticle class with the specified search query
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			(new SearchArticle(ctx)).execute("http://theexonian.com/new/?s=" + s + "&json=1&include=title,url");

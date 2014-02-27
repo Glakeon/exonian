@@ -48,8 +48,7 @@ public class Adapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS articles");
 			onCreate(db);
 		}
@@ -63,9 +62,9 @@ public class Adapter {
 	public void close() {
 		helper.close();
 	}
-
-	public long insertArticle(String title, String author, String content,
-			String date, String url) {
+	
+	// Insert an article into the database
+	public long insertArticle(String title, String author, String content, String date, String url) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_TITLE, title);
 		initialValues.put(KEY_AUTHOR, author);
@@ -74,7 +73,8 @@ public class Adapter {
 		initialValues.put(KEY_URL, url);
 		return db.insertOrThrow(DATABASE_TABLE, null, initialValues);
 	}
-
+	
+	// Convert a Cursor to Article
 	private Article cursorToArticle(Cursor cursor) {
 		Article article = new Article();
 		article.setId(cursor.getLong(0));
@@ -86,22 +86,18 @@ public class Adapter {
 		return article;
 	}
 
-	// get an article with an ID
+	// Get an article with an ID
 	public Article getArticle(long rowId) throws SQLException {
-		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
-				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL },
-				KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL }, KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
 		return cursorToArticle(mCursor);
 	}
 
-	// search for article
+	// Search for article
 	public Article searchArticle (String url) throws SQLException {
-		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
-				KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL },
-				KEY_URL + "=\"" + url + "\"", null, null, null, null, null);
+		Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_AUTHOR, KEY_CONTENT, KEY_DATE, KEY_URL }, KEY_URL + "=\"" + url + "\"", null, null, null, null, null);
 
 		if (mCursor != null) {
 			mCursor.moveToFirst();
